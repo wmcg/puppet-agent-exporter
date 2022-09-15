@@ -35,15 +35,21 @@ func (c Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- configDesc
 }
 
+// in puppet agent config 'agent' block takes precedence over 'main'
+func GetSetting(c *ini.File, s string) string {
+	if c.Section("agent").Key(s).String() != "" {
+		return c.Section("agent").Key(s).String()
+	}
+	return c.Section("main").Key(s).String()
+}
+
 func (c Collector) Collect(ch chan<- prometheus.Metric) {
 	config, err := ini.Load(c.configPath())
 	if err != nil {
 		c.Logger.Errorw("puppet_open_config_failed", "err", err)
 		return
 	}
-	server := config.Section("main").Key("server").String()
-	environment := config.Section("main").Key("environment").String()
-	ch <- prometheus.MustNewConstMetric(configDesc, prometheus.GaugeValue, 1, server, environment)
+	ch <- prometheus.MustNewConstMetric(configDesc, prometheus.GaugeValue, 1, GetSetting(config, "server"), GetSetting(config, "environment"))
 }
 
 func (c Collector) configPath() string {
