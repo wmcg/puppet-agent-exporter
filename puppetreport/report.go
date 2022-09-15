@@ -24,7 +24,6 @@ import (
 )
 
 type runReport struct {
-	ConfigurationVersion float64                     `yaml:"configuration_version"`
 	Time                 time.Time                   `yaml:"time"`
 	TransactionCompleted bool                        `yaml:"transaction_completed"`
 	ReportFormat         int                         `yaml:"report_format"`
@@ -37,7 +36,6 @@ func (r runReport) interpret() interpretedReport {
 	result := interpretedReport{
 		RunAt:          asUnixSeconds(r.Time),
 		RunDuration:    r.totalDuration(),
-		CatalogVersion: r.ConfigurationVersion,
 	}
 	if r.success() {
 		result.RunSuccess = 1

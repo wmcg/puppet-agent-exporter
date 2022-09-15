@@ -82,12 +82,10 @@ type Logger interface {
 type interpretedReport struct {
 	RunAt          float64
 	RunDuration    float64
-	CatalogVersion float64
 	RunSuccess     float64
 }
 
 func (r interpretedReport) collect(ch chan<- prometheus.Metric) {
-	ch <- prometheus.MustNewConstMetric(catalogVersionDesc, prometheus.GaugeValue, r.CatalogVersion)
 	ch <- prometheus.MustNewConstMetric(runAtDesc, prometheus.GaugeValue, r.RunAt)
 	ch <- prometheus.MustNewConstMetric(runDurationDesc, prometheus.GaugeValue, r.RunDuration)
 	ch <- prometheus.MustNewConstMetric(runSuccessDesc, prometheus.GaugeValue, r.RunSuccess)
